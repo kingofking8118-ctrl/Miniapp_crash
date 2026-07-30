@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>💥 بازی انفجار</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ==================== -->
+        <!-- صفحه اصلی (لابی)      -->
+        <!-- ==================== -->
+        <div id="lobbyPage">
+            <div id="header">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">👤</div>
+                    <div class="user-details">
+                        <h1 id="welcomeMessage">کاربر مهمان</h1>
+                        <span id="userUsername">@username</span>
+                    </div>
+                </div>
+                <div class="balance-box">
+                    <span>💰 موجودی</span>
+                    <span id="balanceDisplay">۱۰,۰۰۰</span> تومان
+                </div>
+                <button id="addMoneyBtn" class="add-money-btn">➕ افزایش موجودی</button>
+            </div>
+
+            <div id="gamesList">
+                <h2>🎮 بازی‌ها</h2>
+                <div class="games-grid">
+                    <div class="game-card" onclick="goToGame()">
+                        <div class="game-icon">💥</div>
+                        <div class="game-name">انفجار</div>
+                        <div class="game-desc">ضریب بالا برو و قبل از سقوط برداشت کن!</div>
+                        <button class="play-btn" onclick="event.stopPropagation(); goToGame();">▶ بازی</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="history">
+                <h3>📋 تاریخچه</h3>
+                <ul id="historyList"></ul>
+            </div>
+        </div>
+
+        <!-- ==================== -->
+        <!-- صفحه بازی انفجار      -->
+        <!-- ==================== -->
+        <div id="gamePage" style="display:none;">
+            <button id="backToLobbyBtn" class="back-btn" onclick="goToLobby()">← بازگشت</button>
+
+            <div id="gameHeader">
+                <h2>💥 انفجار</h2>
+                <div class="balance-box small">
+                    <span>💰 موجودی</span>
+                    <span id="gameBalanceDisplay">۱۰,۰۰۰</span> تومان
+                </div>
+            </div>
+
+            <!-- نمایش ضریب بزرگ -->
+            <div id="multiplierDisplay">
+                <span id="multiplierValue">1.00</span>
+                <span id="multiplierUnit">x</span>
+            </div>
+
+            <!-- وضعیت و شمارش معکوس -->
+            <p id="gameStatus">⏳ منتظر شروع راند بعدی...</p>
+            <div id="countdownContainer">
+                <span id="countdownDisplay"></span>
+            </div>
+
+            <!-- نمودار -->
+            <div id="chartContainer">
+                <canvas id="chartCanvas" width="400" height="200"></canvas>
+            </div>
+
+            <!-- بخش شرط‌بندی -->
+            <div class="bet-box">
+                <label>💰 مبلغ شرط</label>
+                <input type="number" id="betInput" value="100" min="100" step="100">
+                
+                <div class="quick-bet-buttons">
+                    <button class="quick-bet" data-amount="100">۱۰۰</button>
+                    <button class="quick-bet" data-amount="500">۵۰۰</button>
+                    <button class="quick-bet" data-amount="1000">۱۰۰۰</button>
+                    <button class="quick-bet" data-amount="5000">۵۰۰۰</button>
+                </div>
+            </div>
+
+            <button id="betButton">🚀 شرط ببند</button>
+            <button id="cashOutButton" style="display:none;">💰 برداشت کن</button>
+            
+            <p id="resultMessage"></p>
+
+            <div id="playersContainer">
+                <h3>👥 بازیکنان</h3>
+                <ul id="playersList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToGame() {
+            document.getElementById('lobbyPage').style.display = 'none';
+            document.getElementById('gamePage').style.display = 'block';
+            setTimeout(() => {
+                if (typeof startGameFromLobby === 'function') {
+                    startGameFromLobby();
+                }
+            }, 300);
+        }
+
+        function goToLobby() {
+            document.getElementById('lobbyPage').style.display = 'block';
+            document.getElementById('gamePage').style.display = 'none';
+            if (typeof stopGame === 'function') {
+                stopGame();
+            }
+        }
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
