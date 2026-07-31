@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🚀 Crash Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+    <!-- ==================== LOBBY ==================== -->
+    <div id="lobby">
+        <div class="header">
+            <span class="title">🚀 Crash</span>
+            <span class="balance" id="lobbyBalance">$1,000</span>
+        </div>
+
+        <div class="user-profile">
+            <div class="avatar" id="lobbyAvatar">👤</div>
+            <div class="user-info">
+                <div class="name" id="lobbyName">Guest</div>
+                <div class="username" id="lobbyUsername">@username</div>
+            </div>
+        </div>
+
+        <div class="lobby-game-card" onclick="goToGame()">
+            <div class="lobby-game-icon">💥</div>
+            <div class="lobby-game-title">Crash</div>
+            <div class="lobby-game-desc">Place bet, watch multiplier climb, cash out before crash!</div>
+            <button class="lobby-play-btn">▶ Play</button>
+        </div>
+
+        <div class="history-box">
+            <div class="history-title">📋 History</div>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+
+    <!-- ==================== GAME ==================== -->
+    <div id="game" class="hidden">
+        <button class="back-btn" onclick="goToLobby()">← Back</button>
+
+        <div class="header">
+            <span class="title">💥 Crash</span>
+            <span class="balance" id="gameBalance">$1,000</span>
+        </div>
+
+        <!-- SPEEDOMETER -->
+        <div class="speedometer">
+            <div class="multiplier" id="multiplierDisplay">
+                1.00<span class="unit">x</span>
+            </div>
+            <div class="status" id="gameStatus">⏳ Waiting for next round...</div>
+            <div class="countdown" id="countdownDisplay"></div>
+        </div>
+
+        <!-- RULER / SCALE -->
+        <div class="ruler">
+            <div class="scale" id="scaleContainer">
+                <div class="tick"><div class="line major"></div><div class="label">1x</div></div>
+                <div class="tick"><div class="line"></div><div class="label">2x</div></div>
+                <div class="tick"><div class="line major"></div><div class="label">3x</div></div>
+                <div class="tick"><div class="line"></div><div class="label">5x</div></div>
+                <div class="tick"><div class="line major"></div><div class="label">10x</div></div>
+                <div class="tick"><div class="line"></div><div class="label">20x</div></div>
+                <div class="tick"><div class="line major"></div><div class="label">50x</div></div>
+                <div class="tick"><div class="line"></div><div class="label">100x</div></div>
+            </div>
+        </div>
+
+        <!-- NEEDLE -->
+        <div class="needle-container">
+            <div class="needle-track">
+                <div class="needle" id="needle" style="left:0%;"></div>
+            </div>
+        </div>
+
+        <!-- CRASH HISTORY -->
+        <div class="crash-history" id="crashHistory"></div>
+
+        <!-- BET SECTION -->
+        <div class="bet-section">
+            <label>💰 Bet Amount</label>
+            <div class="bet-input-group">
+                <input type="number" id="betInput" value="10" min="1" step="1">
+            </div>
+            <div class="quick-bets">
+                <button data-amount="1">1</button>
+                <button data-amount="5">5</button>
+                <button data-amount="10">10</button>
+                <button data-amount="25">25</button>
+                <button data-amount="50">50</button>
+                <button data-amount="100">100</button>
+                <button data-amount="500">500</button>
+                <button data-amount="1000">1000</button>
+            </div>
+        </div>
+
+        <button class="btn-main btn-bet" id="betBtn">🚀 Place Bet</button>
+        <button class="btn-main btn-cash" id="cashBtn">💰 Cash Out</button>
+
+        <div class="result" id="result"></div>
+
+        <div class="players-box">
+            <h3>👥 Players</h3>
+            <ul id="playersList"></ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ==========================================
+// NAVIGATION
+// ==========================================
+function goToGame() {
+    document.getElementById('lobby').classList.add('hidden');
+    document.getElementById('game').classList.remove('hidden');
+    if (typeof startGameFromLobby === 'function') startGameFromLobby();
+}
+
+function goToLobby() {
+    document.getElementById('lobby').classList.remove('hidden');
+    document.getElementById('game').classList.add('hidden');
+    if (typeof stopGame === 'function') stopGame();
+}
+</script>
+<script src="app.js"></script>
+</body>
+</html>
