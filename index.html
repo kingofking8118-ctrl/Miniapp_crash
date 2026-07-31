@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🚀 Crash</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #0a0a1a;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+        }
+        #app { width: 100%; max-width: 400px; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .balance {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .balance span:last-child { color: #4CAF50; }
+        .multiplier-box {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.06);
+        }
+        #multiplier {
+            font-size: 72px;
+            font-weight: 900;
+            font-family: 'Courier New', monospace;
+            color: #4CAF50;
+            transition: color 0.3s;
+        }
+        #multiplier.crashed { color: #ff0000 !important; animation: pulse 0.5s ease-in-out 3; }
+        .unit { font-size: 28px; color: #ffd93d; }
+        @keyframes pulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        #status {
+            text-align: center;
+            font-size: 16px;
+            color: #888;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        #countdown {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd93d;
+        }
+        canvas {
+            width: 100%;
+            height: 180px;
+            border-radius: 12px;
+            background: #0a0a1a;
+            display: block;
+            margin: 10px 0;
+        }
+        .bet-box {
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        label { display: block; font-size: 14px; color: #888; margin-bottom: 8px; text-align: left; }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid rgba(255,107,107,0.2);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.4);
+            color: #fff;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+        input[type="number"]:focus { border-color: #ff6b6b; }
+        .quick-bets {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .quick-bets button {
+            flex: 1;
+            min-width: 40px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,107,107,0.15);
+            background: rgba(255,107,107,0.08);
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-main {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .btn-bet { background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: #fff; }
+        .btn-cash {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: #fff;
+            animation: pulseGreen 1s infinite;
+        }
+        @keyframes pulseGreen {
+            0%,100% { box-shadow: 0 0 20px rgba(76,175,80,0.2); }
+            50% { box-shadow: 0 0 40px rgba(76,175,80,0.4); }
+        }
+        .btn-main:disabled { opacity: 0.4; }
+        #result { text-align: center; font-size: 16px; font-weight: bold; min-height: 30px; padding: 10px; }
+        .players-box {
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.06);
+            margin-top: 15px;
+        }
+        .players-box h3 { font-size: 14px; color: #888; margin-bottom: 10px; text-align: left; }
+        #playersList { list-style: none; padding: 0; }
+        #playersList li {
+            padding: 6px 12px;
+            margin-bottom: 4px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+        .user-bet { border-left: 3px solid #4CAF50; background: rgba(76,175,80,0.08) !important; }
+        .user-bet span:first-child { color: #4CAF50; font-weight: bold; }
+        .history-box {
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.06);
+            margin-top: 15px;
+        }
+        .history-box h3 { font-size: 14px; color: #888; margin-bottom: 10px; text-align: left; }
+        #crashHistory {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        #crashHistory span {
+            background: rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .game-header h2 { color: #ff6b6b; font-size: 22px; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div id="app">
+
+    <!-- LOBBY -->
+    <div id="lobby">
+        <div class="card">
+            <div style="display:flex;align-items:center;gap:15px;">
+                <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ff6b6b,#ee5a24);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;">👤</div>
+                <div style="text-align:left;">
+                    <h1 id="lobbyName" style="font-size:18px;">Guest</h1>
+                    <span id="lobbyUsername" style="color:#888;font-size:13px;">@username</span>
+                </div>
+            </div>
+            <div class="balance" style="margin-top:15px;">
+                <span>💰 Balance</span>
+                <span id="lobbyBalance">$1,000</span>
+            </div>
+            <button onclick="addFunds()" style="width:100%;margin-top:10px;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#ffd93d,#f9a825);color:#1a1a2e;font-weight:bold;font-size:15px;cursor:pointer;">➕ Add Funds</button>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="goToGame()">
+            <div style="text-align:center;font-size:56px;">🚀</div>
+            <div style="text-align:center;font-size:20px;font-weight:bold;background:linear-gradient(45deg,#ff6b6b,#ffd93d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Crash</div>
+            <div style="text-align:center;color:#888;font-size:14px;margin:5px 0 15px;">Bet, watch multiplier climb, cash out before crash!</div>
+            <button style="width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ee5a24);color:#fff;font-weight:bold;font-size:16px;cursor:pointer;">▶ Play</button>
+        </div>
+        <div class="history-box">
+            <h3>📋 History</h3>
+            <ul id="historyList" style="list-style:none;padding:0;max-height:120px;overflow-y:auto;"></ul>
+        </div>
+    </div>
+
+    <!-- GAME -->
+    <div id="game" class="hidden">
+        <button class="back-btn" onclick="goToLobby()">← Back</button>
+        <div class="game-header">
+            <h2>🚀 Crash</h2>
+            <div class="balance" style="font-size:14px;padding:8px 14px;background:rgba(255,255,255,0.05);border-radius:10px;">
+                <span>💰</span>
+                <span id="gameBalance">$1,000</span>
+            </div>
+        </div>
+
+        <div class="multiplier-box">
+            <span id="multiplier">1.00</span>
+            <span class="unit">x</span>
+        </div>
+
+        <div id="status">⏳ Waiting for next round...</div>
+        <div id="countdown" style="font-size:36px;font-weight:bold;color:#ffd93d;"></div>
+
+        <div id="crashHistoryBox" class="hidden" style="margin:10px 0;background:rgba(255,255,255,0.04);border-radius:14px;padding:12px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:13px;color:#888;margin-bottom:8px;text-align:left;">📊 Recent Crashes</div>
+            <div id="crashHistory"></div>
+        </div>
+
+        <canvas id="chartCanvas" width="400" height="180"></canvas>
+
+        <div class="bet-box">
+            <label>💰 Bet Amount ($)</label>
+            <input type="number" id="betInput" value="10" min="1" step="1">
+            <div class="quick-bets">
+                <button data-amount="1">$1</button>
+                <button data-amount="5">$5</button>
+                <button data-amount="10">$10</button>
+                <button data-amount="25">$25</button>
+                <button data-amount="50">$50</button>
+                <button data-amount="100">$100</button>
+            </div>
+        </div>
+
+        <button class="btn-main btn-bet" id="betBtn">🚀 Place Bet</button>
+        <button class="btn-main btn-cash hidden" id="cashBtn">💰 Cash Out</button>
+
+        <div id="result"></div>
+
+        <div class="players-box">
+            <h3>👥 Players</h3>
+            <ul id="playersList"></ul>
+        </div>
+    </div>
+
+</div>
+<script>
+// ==========================================
+// NAVIGATION
+// ==========================================
+function goToGame() {
+    document.getElementById('lobby').classList.add('hidden');
+    document.getElementById('game').classList.remove('hidden');
+    if (typeof startGameFromLobby === 'function') startGameFromLobby();
+}
+function goToLobby() {
+    document.getElementById('lobby').classList.remove('hidden');
+    document.getElementById('game').classList.add('hidden');
+    if (typeof stopGame === 'function') stopGame();
+}
+</script>
+<script src="app.js"></script>
+</body>
+</html>
