@@ -1,0 +1,630 @@
+/* ==========================================
+   RESET & BASE
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(145deg, #0a0a1a, #1a1a2e);
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 15px;
+    direction: ltr;
+}
+
+#app {
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+
+/* ==========================================
+   SCROLLBAR
+   ========================================== */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(255, 107, 107, 0.3); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ==========================================
+   USER PROFILE
+   ========================================== */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.user-details {
+    text-align: left;
+    flex: 1;
+}
+
+.user-details h1 {
+    font-size: 18px;
+    color: #fff;
+    margin: 0;
+}
+
+.user-details #userUsername {
+    font-size: 13px;
+    color: #888;
+}
+
+/* ==========================================
+   BALANCE
+   ========================================== */
+.balance-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 18px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 10px;
+}
+
+.balance-box.small {
+    padding: 8px 14px;
+    font-size: 13px;
+    margin: 0;
+}
+
+#balanceDisplay, #gameBalanceDisplay {
+    color: #4CAF50;
+    font-size: 17px;
+}
+
+.add-money-btn {
+    background: linear-gradient(135deg, #ffd93d, #f9a825);
+    color: #1a1a2e;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(255, 217, 61, 0.2);
+}
+
+.add-money-btn:active {
+    transform: scale(0.96);
+}
+
+/* ==========================================
+   GAMES LIST
+   ========================================== */
+#gamesList {
+    margin: 20px 0;
+}
+
+#gamesList h2 {
+    font-size: 18px;
+    color: #888;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.game-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border-radius: 16px;
+    padding: 25px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.game-card:active {
+    transform: scale(0.97);
+}
+
+.game-card .game-icon {
+    font-size: 56px;
+    margin-bottom: 8px;
+}
+
+.game-card .game-name {
+    font-size: 20px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.game-card .game-desc {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.play-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: #fff;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    max-width: 200px;
+    transition: all 0.2s;
+}
+
+.play-btn:active {
+    transform: scale(0.95);
+}
+
+/* ==========================================
+   BACK BUTTON
+   ========================================== */
+.back-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    margin-bottom: 15px;
+}
+
+.back-btn:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ==========================================
+   GAME HEADER
+   ========================================== */
+#gameHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#gameHeader h2 {
+    font-size: 22px;
+    color: #ff6b6b;
+}
+
+/* ==========================================
+   MULTIPLIER DISPLAY
+   ========================================== */
+#multiplierDisplay {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    border-radius: 20px;
+    padding: 25px 20px;
+    margin: 15px 0;
+    border: 2px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+#multiplierDisplay::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 107, 107, 0.05) 0%, transparent 70%);
+    animation: rotateGlow 15s linear infinite;
+}
+
+@keyframes rotateGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#multiplierValue {
+    font-size: 72px;
+    font-weight: 900;
+    display: block;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 40px rgba(76, 175, 80, 0.15);
+    transition: color 0.3s;
+}
+
+#multiplierValue.crashed {
+    color: #ff0000 !important;
+    animation: pulse 0.5s ease-in-out 3;
+}
+
+#multiplierUnit {
+    font-size: 28px;
+    color: #ffd93d;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* ==========================================
+   GAME STATUS
+   ========================================== */
+#gameStatus {
+    font-size: 14px;
+    color: #888;
+    margin: 5px 0 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+#countdownContainer {
+    margin: 5px 0 10px;
+}
+
+#countdownDisplay {
+    font-size: 32px;
+    font-weight: bold;
+    color: #ffd93d;
+    animation: pulse 1s infinite;
+}
+
+/* ==========================================
+   CRASH HISTORY
+   ========================================== */
+#crashHistoryContainer {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 12px 15px;
+    border-radius: 14px;
+    margin: 10px 0 15px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+#crashHistoryContainer h3 {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+#crashHistoryList {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+#crashHistoryList li {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+/* ==========================================
+   CHART
+   ========================================== */
+#chartContainer {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    padding: 8px;
+    margin: 10px 0 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#chartCanvas {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    background: #0a0a1a;
+    display: block;
+}
+
+/* ==========================================
+   BET SECTION
+   ========================================== */
+.bet-box {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 15px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.bet-input-group {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #888;
+    text-align: left;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    border: 2px solid rgba(255, 107, 107, 0.2);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input[type="number"]:focus {
+    border-color: #ff6b6b;
+}
+
+.quick-bet-buttons {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.quick-bet {
+    background: rgba(255, 107, 107, 0.08);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.15);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    flex: 1;
+    min-width: 40px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quick-bet:active {
+    transform: scale(0.95);
+    background: rgba(255, 107, 107, 0.2);
+}
+
+.auto-cashout-group {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auto-cashout-group label {
+    margin: 0;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.auto-cashout-group input {
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+}
+
+.auto-label {
+    color: #888;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
+#betButton {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.2);
+}
+
+#betButton:active {
+    transform: scale(0.96);
+}
+
+#betButton:disabled {
+    opacity: 0.4;
+    transform: none;
+}
+
+#cashOutButton {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.2);
+    animation: pulseGreen 1s infinite;
+}
+
+#cashOutButton:active {
+    transform: scale(0.96);
+}
+
+@keyframes pulseGreen {
+    0%, 100% { box-shadow: 0 4px 20px rgba(76, 175, 80, 0.2); }
+    50% { box-shadow: 0 4px 40px rgba(76, 175, 80, 0.4); }
+}
+
+/* ==========================================
+   RESULT MESSAGE
+   ========================================== */
+#resultMessage {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    min-height: 30px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+/* ==========================================
+   PLAYERS LIST
+   ========================================== */
+#playersContainer {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 15px;
+    border-radius: 14px;
+    margin: 15px 0;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+#playersContainer h3 {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+#playersList {
+    list-style: none;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+#playersList li {
+    padding: 6px 12px;
+    margin-bottom: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.user-bet {
+    border-left: 3px solid #4CAF50;
+    background: rgba(76, 175, 80, 0.08) !important;
+}
+
+.user-bet span:first-child {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.other-bet {
+    border-left: 3px solid #ffd93d;
+}
+
+/* ==========================================
+   HISTORY
+   ========================================== */
+#history {
+    margin-top: 15px;
+    text-align: left;
+}
+
+#history h3 {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+#historyList {
+    list-style: none;
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+#historyList li {
+    padding: 6px 12px;
+    margin-bottom: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    font-size: 13px;
+    border-left: 3px solid transparent;
+}
+
+.win {
+    border-left-color: #4CAF50 !important;
+    color: #4CAF50;
+}
+
+.lose {
+    border-left-color: #f44336 !important;
+    color: #f44336;
+}
+
+.crash {
+    border-left-color: #ff6b6b !important;
+    color: #ff6b6b;
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#lobbyPage, #gamePage {
+    animation: fadeIn 0.3s ease;
+}
