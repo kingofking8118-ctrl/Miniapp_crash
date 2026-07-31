@@ -45,7 +45,6 @@ const historyList = document.getElementById('historyList');
 let multiplier = 1.00;
 let isPlaying = false;
 let isCrashed = false;
-let gameInterval = null;
 let crashPoint = 0;
 let hasBet = false;
 let betAmount = 0;
@@ -53,10 +52,10 @@ let betMultiplier = 0;
 let isCashedOut = false;
 let crashHistory = [];
 let countdown = 10;
-let countdownInterval = null;
 let isWaiting = false;
 let gameHistory = [];
-let isGameLoopRunning = false;
+let loopId = null;
+let countdownId = null;
 
 // ==========================================
 // CONSTANTS
@@ -153,19 +152,14 @@ function generateCrashPoint() {
 }
 
 // ==========================================
-// GAME LOOP FUNCTION - RUNS EVERY 50ms
+// UPDATE MULTIPLIER - MAIN LOOP
 // ==========================================
-function gameLoopFunction() {
+function updateMultiplier() {
     if (!isPlaying || isCrashed) {
-        if (gameInterval) {
-            clearInterval(gameInterval);
-            gameInterval = null;
-            isGameLoopRunning = false;
-        }
         return;
     }
 
-    // INCREASE MULTIPLIER
+    // Increase multiplier - VERY SLOW
     const baseSpeed = 0.00006;
     const logFactor = Math.log(multiplier + 0.5) / Math.log(10);
     const speed = baseSpeed * (1 + logFactor * 1.5);
@@ -173,10 +167,10 @@ function gameLoopFunction() {
     multiplier += speed;
     multiplier = Math.round(multiplier * 100) / 100;
 
-    // UPDATE DISPLAY
+    // Update display
     multiplierDisplay.innerHTML = multiplier.toFixed(2) + '<span class="unit">x</span>';
 
-    // COLOR
+    // Color
     if (multiplier < 1.5) multiplierDisplay.style.color = '#4CAF50';
     else if (multiplier < 2.5) multiplierDisplay.style.color = '#ffd93d';
     else if (multiplier < 4) multiplierDisplay.style.color = '#ff9f43';
@@ -184,20 +178,24 @@ function gameLoopFunction() {
     else if (multiplier < 10) multiplierDisplay.style.color = '#ff4500';
     else multiplierDisplay.style.color = '#ff0000';
 
-    // NEEDLE
+    // Needle
     updateNeedle(multiplier);
 
-    // CASH OUT BUTTON
+    // Cash out button
     if (hasBet && !isCashedOut) {
         betMultiplier = multiplier;
         cashBtn.textContent = '💰 Cash Out at ' + multiplier.toFixed(2) + 'x';
         cashBtn.classList.add('show');
     }
 
-    // CHECK CRASH
+    // Check crash
     if (multiplier >= crashPoint) {
         crashGame();
+        return;
     }
+
+    // Continue loop
+    loopId = setTimeout(updateMultiplier, 50);
 }
 
 // ==========================================
@@ -209,7 +207,6 @@ function startGame() {
     isCrashed = false;
     multiplier = 1.00;
     crashPoint = generateCrashPoint();
-    isGameLoopRunning = false;
 
     // Update display
     multiplierDisplay.innerHTML = '1.00<span class="unit">x</span>';
@@ -227,15 +224,9 @@ function startGame() {
         cashBtn.textContent = '💰 Cash Out at 1.00x';
     }
 
-    // Clear any existing interval
-    if (gameInterval) {
-        clearInterval(gameInterval);
-        gameInterval = null;
-    }
-
-    // Start game loop
-    gameInterval = setInterval(gameLoopFunction, 50);
-    isGameLoopRunning = true;
+    // Start loop
+    if (loopId) clearTimeout(loopId);
+    updateMultiplier();
 }
 
 // ==========================================
@@ -247,11 +238,10 @@ function crashGame() {
     isCrashed = true;
     isPlaying = false;
 
-    // Stop interval
-    if (gameInterval) {
-        clearInterval(gameInterval);
-        gameInterval = null;
-        isGameLoopRunning = false;
+    // Stop loop
+    if (loopId) {
+        clearTimeout(loopId);
+        loopId = null;
     }
 
     // Add to crash history
@@ -309,14 +299,13 @@ function cashOut() {
 // ==========================================
 function startCountdown() {
     // Clear everything
-    if (gameInterval) {
-        clearInterval(gameInterval);
-        gameInterval = null;
-        isGameLoopRunning = false;
+    if (loopId) {
+        clearTimeout(loopId);
+        loopId = null;
     }
-    if (countdownInterval) {
-        clearInterval(countdownInterval);
-        countdownInterval = null;
+    if (countdownId) {
+        clearInterval(countdownId);
+        countdownId = null;
     }
 
     // Reset state
@@ -340,14 +329,14 @@ function startCountdown() {
     updatePlayers();
 
     // Start countdown
-    countdownInterval = setInterval(function() {
+    countdownId = setInterval(function() {
         countdown--;
         if (countdown > 0) {
             countdownDisplay.textContent = countdown;
             gameStatus.textContent = '⏳ Place your bet! ' + countdown + 's';
         } else {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
+            clearInterval(countdownId);
+            countdownId = null;
             countdownDisplay.textContent = '';
             isWaiting = false;
             // START GAME IMMEDIATELY
@@ -420,14 +409,13 @@ function startGameFromLobby() {
 }
 
 function stopGame() {
-    if (gameInterval) {
-        clearInterval(gameInterval);
-        gameInterval = null;
-        isGameLoopRunning = false;
+    if (loopId) {
+        clearTimeout(loopId);
+        loopId = null;
     }
-    if (countdownInterval) {
-        clearInterval(countdownInterval);
-        countdownInterval = null;
+    if (countdownId) {
+        clearInterval(countdownId);
+        countdownId = null;
     }
     isPlaying = false;
     isWaiting = false;
