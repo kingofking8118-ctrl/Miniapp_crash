@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>ALTIMETER — Crash Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◎</span>
+      <span class="brand-name">ALTIMETER</span>
+      <span class="brand-tag">DEMO · VIRTUAL COINS ONLY</span>
+    </div>
+    <div class="balance-pill">
+      <span class="balance-label">BALANCE</span>
+      <span id="balance" class="balance-value">—</span>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="instrument-wrap">
+      <canvas id="gauge" width="640" height="640"></canvas>
+      <div class="readout">
+        <div id="multiplier" class="multiplier">1.00×</div>
+        <div id="phase-label" class="phase-label">Waiting for next round…</div>
+      </div>
+    </div>
+
+    <div class="verify-strip">
+      <span>SEED HASH</span>
+      <code id="seed-hash">—</code>
+    </div>
+
+    <section class="console">
+      <div class="control-block">
+        <label class="control-label">Bet amount (demo coins)</label>
+        <div class="stepper">
+          <button class="rocker" data-step="-100">−100</button>
+          <input id="bet-amount" type="number" min="10" step="10" value="100" />
+          <button class="rocker" data-step="100">+100</button>
+        </div>
+        <div class="chip-row">
+          <button class="chip" data-amount="50">50</button>
+          <button class="chip" data-amount="100">100</button>
+          <button class="chip" data-amount="500">500</button>
+          <button class="chip" data-amount="1000">1000</button>
+        </div>
+      </div>
+
+      <button id="action-btn" class="action-btn place">Place Bet</button>
+
+      <div id="status-line" class="status-line"></div>
+    </section>
+
+    <section class="history">
+      <h3>Recent Rounds</h3>
+      <div id="history-strip" class="history-strip"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
