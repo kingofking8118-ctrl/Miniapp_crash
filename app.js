@@ -45,7 +45,7 @@ const historyList = document.getElementById('historyList');
 let multiplier = 1.00;
 let isPlaying = false;
 let isCrashed = false;
-let gameLoop = null;
+let gameInterval = null;
 let crashPoint = 0;
 let hasBet = false;
 let betAmount = 0;
@@ -53,9 +53,10 @@ let betMultiplier = 0;
 let isCashedOut = false;
 let crashHistory = [];
 let countdown = 10;
-let countdownLoop = null;
+let countdownInterval = null;
 let isWaiting = false;
 let gameHistory = [];
+let isGameLoopRunning = false;
 
 // ==========================================
 // CONSTANTS
@@ -152,14 +153,65 @@ function generateCrashPoint() {
 }
 
 // ==========================================
+// GAME LOOP FUNCTION - RUNS EVERY 50ms
+// ==========================================
+function gameLoopFunction() {
+    if (!isPlaying || isCrashed) {
+        if (gameInterval) {
+            clearInterval(gameInterval);
+            gameInterval = null;
+            isGameLoopRunning = false;
+        }
+        return;
+    }
+
+    // INCREASE MULTIPLIER
+    const baseSpeed = 0.00006;
+    const logFactor = Math.log(multiplier + 0.5) / Math.log(10);
+    const speed = baseSpeed * (1 + logFactor * 1.5);
+    
+    multiplier += speed;
+    multiplier = Math.round(multiplier * 100) / 100;
+
+    // UPDATE DISPLAY
+    multiplierDisplay.innerHTML = multiplier.toFixed(2) + '<span class="unit">x</span>';
+
+    // COLOR
+    if (multiplier < 1.5) multiplierDisplay.style.color = '#4CAF50';
+    else if (multiplier < 2.5) multiplierDisplay.style.color = '#ffd93d';
+    else if (multiplier < 4) multiplierDisplay.style.color = '#ff9f43';
+    else if (multiplier < 6) multiplierDisplay.style.color = '#ff6b6b';
+    else if (multiplier < 10) multiplierDisplay.style.color = '#ff4500';
+    else multiplierDisplay.style.color = '#ff0000';
+
+    // NEEDLE
+    updateNeedle(multiplier);
+
+    // CASH OUT BUTTON
+    if (hasBet && !isCashedOut) {
+        betMultiplier = multiplier;
+        cashBtn.textContent = '💰 Cash Out at ' + multiplier.toFixed(2) + 'x';
+        cashBtn.classList.add('show');
+    }
+
+    // CHECK CRASH
+    if (multiplier >= crashPoint) {
+        crashGame();
+    }
+}
+
+// ==========================================
 // START GAME
 // ==========================================
 function startGame() {
+    // Reset state
     isPlaying = true;
     isCrashed = false;
     multiplier = 1.00;
     crashPoint = generateCrashPoint();
+    isGameLoopRunning = false;
 
+    // Update display
     multiplierDisplay.innerHTML = '1.00<span class="unit">x</span>';
     multiplierDisplay.className = 'multiplier';
     gameStatus.textContent = '🚀 Playing...';
@@ -169,46 +221,21 @@ function startGame() {
     resultEl.textContent = '';
     updateNeedle(1);
 
+    // Show cash out if bet exists
     if (hasBet && !isCashedOut) {
         cashBtn.classList.add('show');
         cashBtn.textContent = '💰 Cash Out at 1.00x';
     }
 
-    if (gameLoop) clearInterval(gameLoop);
-    gameLoop = setInterval(function() {
-        if (!isPlaying || isCrashed) {
-            clearInterval(gameLoop);
-            gameLoop = null;
-            return;
-        }
+    // Clear any existing interval
+    if (gameInterval) {
+        clearInterval(gameInterval);
+        gameInterval = null;
+    }
 
-        const baseSpeed = 0.00006;
-        const logFactor = Math.log(multiplier + 0.5) / Math.log(10);
-        const speed = baseSpeed * (1 + logFactor * 1.5);
-        
-        multiplier += speed;
-        multiplier = Math.round(multiplier * 100) / 100;
-
-        multiplierDisplay.innerHTML = multiplier.toFixed(2) + '<span class="unit">x</span>';
-
-        if (multiplier < 1.5) multiplierDisplay.style.color = '#4CAF50';
-        else if (multiplier < 2.5) multiplierDisplay.style.color = '#ffd93d';
-        else if (multiplier < 4) multiplierDisplay.style.color = '#ff9f43';
-        else if (multiplier < 6) multiplierDisplay.style.color = '#ff6b6b';
-        else if (multiplier < 10) multiplierDisplay.style.color = '#ff4500';
-        else multiplierDisplay.style.color = '#ff0000';
-
-        updateNeedle(multiplier);
-
-        if (hasBet && !isCashedOut) {
-            betMultiplier = multiplier;
-            cashBtn.textContent = '💰 Cash Out at ' + multiplier.toFixed(2) + 'x';
-        }
-
-        if (multiplier >= crashPoint) {
-            crashGame();
-        }
-    }, 50);
+    // Start game loop
+    gameInterval = setInterval(gameLoopFunction, 50);
+    isGameLoopRunning = true;
 }
 
 // ==========================================
@@ -216,21 +243,27 @@ function startGame() {
 // ==========================================
 function crashGame() {
     if (isCrashed) return;
+    
     isCrashed = true;
     isPlaying = false;
 
-    if (gameLoop) {
-        clearInterval(gameLoop);
-        gameLoop = null;
+    // Stop interval
+    if (gameInterval) {
+        clearInterval(gameInterval);
+        gameInterval = null;
+        isGameLoopRunning = false;
     }
 
+    // Add to crash history
     crashHistory.push(multiplier);
     updateCrashHistory();
 
+    // Update display
     multiplierDisplay.className = 'multiplier crashed';
     gameStatus.textContent = '💥 CRASHED!';
     cashBtn.classList.remove('show');
 
+    // Handle bet result
     if (hasBet && !isCashedOut) {
         const msg = '💔 Lost $' + betAmount + ' (' + multiplier.toFixed(2) + 'x)';
         resultEl.textContent = msg;
@@ -243,6 +276,7 @@ function crashGame() {
     addHistory('💥 Crashed at ' + multiplier.toFixed(2) + 'x', 'crash');
     updatePlayers();
 
+    // Next round after 1.5s
     setTimeout(function() {
         startCountdown();
     }, 1500);
@@ -274,15 +308,18 @@ function cashOut() {
 // COUNTDOWN
 // ==========================================
 function startCountdown() {
-    if (gameLoop) {
-        clearInterval(gameLoop);
-        gameLoop = null;
+    // Clear everything
+    if (gameInterval) {
+        clearInterval(gameInterval);
+        gameInterval = null;
+        isGameLoopRunning = false;
     }
-    if (countdownLoop) {
-        clearInterval(countdownLoop);
-        countdownLoop = null;
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
     }
 
+    // Reset state
     isWaiting = true;
     isPlaying = false;
     isCrashed = false;
@@ -291,6 +328,7 @@ function startCountdown() {
     isCashedOut = false;
     multiplier = 1.00;
 
+    // Update display
     multiplierDisplay.innerHTML = '1.00<span class="unit">x</span>';
     multiplierDisplay.className = 'multiplier';
     gameStatus.textContent = '⏳ Place your bet! ' + countdown + 's';
@@ -301,16 +339,18 @@ function startCountdown() {
     updateNeedle(1);
     updatePlayers();
 
-    countdownLoop = setInterval(function() {
+    // Start countdown
+    countdownInterval = setInterval(function() {
         countdown--;
         if (countdown > 0) {
             countdownDisplay.textContent = countdown;
             gameStatus.textContent = '⏳ Place your bet! ' + countdown + 's';
         } else {
-            clearInterval(countdownLoop);
-            countdownLoop = null;
+            clearInterval(countdownInterval);
+            countdownInterval = null;
             countdownDisplay.textContent = '';
             isWaiting = false;
+            // START GAME IMMEDIATELY
             startGame();
         }
     }, 1000);
@@ -380,13 +420,14 @@ function startGameFromLobby() {
 }
 
 function stopGame() {
-    if (gameLoop) {
-        clearInterval(gameLoop);
-        gameLoop = null;
+    if (gameInterval) {
+        clearInterval(gameInterval);
+        gameInterval = null;
+        isGameLoopRunning = false;
     }
-    if (countdownLoop) {
-        clearInterval(countdownLoop);
-        countdownLoop = null;
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
     }
     isPlaying = false;
     isWaiting = false;
@@ -404,4 +445,5 @@ tg.MainButton.onClick(function() {
 // ==========================================
 // INIT
 // ==========================================
+updateHistoryList();
 startCountdown();
