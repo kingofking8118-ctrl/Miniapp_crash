@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>✈️ Aviator Crash</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+    <!-- ===== LOBBY ===== -->
+    <div id="lobby">
+        <div class="header">
+            <div class="user-info">
+                <div class="avatar" id="lobbyAvatar">👤</div>
+                <div>
+                    <div class="name" id="lobbyName">Guest</div>
+                    <div class="username" id="lobbyUsername">@username</div>
+                </div>
+            </div>
+            <div class="balance-box">
+                <span class="bal-label">💰 Balance</span>
+                <span class="bal-amount" id="lobbyBalance">$1,000</span>
+            </div>
+        </div>
+
+        <button class="deposit-btn" id="depositBtn">⚡ Deposit</button>
+
+        <div class="game-card" onclick="goToGame()">
+            <div class="game-icon">✈️</div>
+            <div class="game-title">Aviator Crash</div>
+            <div class="game-desc">Place your bet, watch the plane take off!</div>
+            <button class="play-btn">▶ Play Now</button>
+        </div>
+
+        <div class="history-section">
+            <div class="section-title">📋 History</div>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- ===== GAME ===== -->
+    <div id="game" class="hidden">
+        <button class="back-btn" onclick="goToLobby()">← Back</button>
+
+        <div class="game-header">
+            <h2>✈️ Aviator</h2>
+            <div class="balance-box small">
+                <span class="bal-label">💰</span>
+                <span class="bal-amount" id="gameBalance">$1,000</span>
+            </div>
+        </div>
+
+        <!-- MULTIPLIER -->
+        <div class="multiplier-display">
+            <div class="multiplier" id="multiplierDisplay">1.00<span class="unit">x</span></div>
+            <div class="status" id="gameStatus">⏳ Waiting...</div>
+            <div class="countdown" id="countdownDisplay"></div>
+        </div>
+
+        <!-- CHART -->
+        <div class="chart-container">
+            <canvas id="chartCanvas" width="380" height="200"></canvas>
+        </div>
+
+        <!-- CRASH HISTORY -->
+        <div class="crash-history-bar">
+            <span class="crash-label">📊 Recent:</span>
+            <span id="crashHistoryList"></span>
+        </div>
+
+        <!-- ===== BETTING SECTION ===== -->
+        <div class="betting-section">
+
+            <!-- AUTO BET -->
+            <div class="auto-bet-row">
+                <span class="auto-label">🤖 Auto Bet</span>
+                <input type="number" id="autoBetInput" placeholder="2.00" value="2.00" step="0.01" min="1.01">
+                <button class="auto-btn" id="autoBetBtn">▶ Start</button>
+            </div>
+
+            <!-- BET INPUT -->
+            <div class="bet-input-row">
+                <input type="number" id="betInput" placeholder="0.1" value="0.1" step="0.1" min="0.1">
+            </div>
+            <div class="quick-bets">
+                <button data-amount="0.1">$0.1</button>
+                <button data-amount="1">$1</button>
+                <button data-amount="5">$5</button>
+                <button data-amount="10">$10</button>
+                <button data-amount="50">$50</button>
+                <button data-amount="100">$100</button>
+                <button data-amount="1000">$1000</button>
+            </div>
+
+            <!-- ===== THREE MAIN BUTTONS ===== -->
+            <button class="btn-main btn-bet" id="betBtn">🚀 Place Bet</button>
+            <button class="btn-main btn-cancel" id="cancelBtn">🔄 Cancel Bet</button>
+            <button class="btn-main btn-cash" id="cashBtn">💰 Cash Out</button>
+
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-value" id="totalBets">0</div>
+                <div class="stat-label">Total Bets</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="totalWins">$0</div>
+                <div class="stat-label">Total Wins</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="totalBetAmount">$0</div>
+                <div class="stat-label">Total Bet</div>
+            </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="history-section" id="historySection">
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- ===== DEPOSIT MODAL ===== -->
+    <div id="depositModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">💳 Deposit</h2>
+                <button class="modal-close" onclick="closeDepositModal()">✕</button>
+            </div>
+
+            <!-- ===== STEP 1: Select Currency ===== -->
+            <div id="step1" class="modal-step">
+                <p class="modal-desc">Select currency to deposit</p>
+                <div class="currency-grid">
+                    <div class="currency-item active" data-currency="ton" onclick="selectCurrency('ton')">
+                        <div class="currency-icon">💎</div>
+                        <div class="currency-name">TON</div>
+                        <div class="currency-status">✓ Active</div>
+                    </div>
+                    <div class="currency-item disabled" data-currency="btc" onclick="selectCurrency('btc')">
+                        <div class="currency-icon">₿</div>
+                        <div class="currency-name">BTC</div>
+                        <div class="currency-status">🔒 Coming Soon</div>
+                    </div>
+                    <div class="currency-item disabled" data-currency="usdt" onclick="selectCurrency('usdt')">
+                        <div class="currency-icon">💵</div>
+                        <div class="currency-name">USDT</div>
+                        <div class="currency-status">🔒 Coming Soon</div>
+                    </div>
+                    <div class="currency-item disabled" data-currency="trx" onclick="selectCurrency('trx')">
+                        <div class="currency-icon">🌀</div>
+                        <div class="currency-name">TRX</div>
+                        <div class="currency-status">🔒 Coming Soon</div>
+                    </div>
+                </div>
+                <button class="btn-next" onclick="goToStep2()">Next →</button>
+            </div>
+
+            <!-- ===== STEP 2: Enter Amount ===== -->
+            <div id="step2" class="modal-step hidden">
+                <p class="modal-desc">Enter deposit amount in TON</p>
+                <div class="amount-input-group">
+                    <input type="number" id="depositAmountInput" placeholder="0.00" value="10" min="0.1" step="0.1">
+                    <span class="currency-suffix">TON</span>
+                </div>
+                <div class="usd-equivalent">
+                    ≈ $<span id="usdEquivalent">12.50</span> USD
+                </div>
+                <div class="quick-amounts">
+                    <button onclick="setAmount(5)">5 TON</button>
+                    <button onclick="setAmount(10)">10 TON</button>
+                    <button onclick="setAmount(25)">25 TON</button>
+                    <button onclick="setAmount(50)">50 TON</button>
+                    <button onclick="setAmount(100)">100 TON</button>
+                </div>
+                <div class="step-buttons">
+                    <button class="btn-back" onclick="goToStep1()">← Back</button>
+                    <button class="btn-next" onclick="goToStep3()">Confirm →</button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 3: Show Address ===== -->
+            <div id="step3" class="modal-step hidden">
+                <p class="modal-desc">Send the exact amount to the address below</p>
+                
+                <div class="deposit-summary">
+                    <div class="summary-row">
+                        <span class="summary-label">💎 Currency</span>
+                        <span class="summary-value" id="summaryCurrency">TON</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">💰 Amount</span>
+                        <span class="summary-value" id="summaryAmount">10 TON</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">💵 USD Value</span>
+                        <span class="summary-value" id="summaryUsd">$12.50</span>
+                    </div>
+                </div>
+
+                <div class="ton-address-box">
+                    <p class="address-label">🏦 Send to this address:</p>
+                    <div class="address-copy">
+                        <code id="tonWalletAddress">UQBXln8BHdlAcsyQtaLWKewRwL1iffqvwX7TaYAT0xM0bXGH</code>
+                        <button class="btn-copy" id="copyAddressBtn" onclick="copyAddress()">📋 Copy</button>
+                    </div>
+                </div>
+
+                <div class="warning-text">
+                    ⚠️ Send only <strong id="warningAmount">10 TON</strong> to this address.
+                    <br>Transactions may take 2-5 minutes.
+                </div>
+
+                <div class="step-buttons">
+                    <button class="btn-back" onclick="goToStep2()">← Back</button>
+                    <button class="btn-next" onclick="checkDeposit()">🔄 I've Sent</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function goToGame() {
+    document.getElementById('lobby').classList.add('hidden');
+    document.getElementById('game').classList.remove('hidden');
+    if (typeof startGameFromLobby === 'function') startGameFromLobby();
+}
+
+function goToLobby() {
+    document.getElementById('lobby').classList.remove('hidden');
+    document.getElementById('game').classList.add('hidden');
+    if (typeof stopGame === 'function') stopGame();
+}
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>
